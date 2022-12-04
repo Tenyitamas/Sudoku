@@ -43,7 +43,7 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
         if(sudokuGame.checkForMistakes() == BoardResult.NO_MISTAKE) {
             sudokuFrame.showMessageDialog("No mistakes so far");
         } else {
-            sudokuFrame.showMessageDialog("Early dumbass");
+            sudokuFrame.showMessageDialog("You already made some mistakes... Come on, you can do better than this.");
         }
     }
 
@@ -66,7 +66,7 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
         } else if(result == BoardResult.HAS_MISTAKE) {
             sudokuGame.setGameState(GameState.ONGOING);
             sudokuFrame.updateViewWithGame(sudokuGame);
-            sudokuFrame.showMessageDialog("Dumbass...");
+            sudokuFrame.showMessageDialog("You made some mistakes.");
         } else {
             sudokuFrame.updateViewWithGame(sudokuGame);
         }
