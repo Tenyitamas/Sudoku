@@ -1,2 +1,6 @@
-package domain.model;public enum GameState {
+package domain.model;
+
+public enum GameState {
+    COMPLETE,
+    ONGOING
 }

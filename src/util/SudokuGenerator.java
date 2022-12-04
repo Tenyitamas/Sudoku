@@ -1,31 +1,30 @@
-package domain.model;
+package util;
 
-import java.util.ArrayList;
+import domain.model.Field;
+import domain.model.Level;
+
 import java.util.Random;
 
 import static util.Constants.*;
 
-public class Sudoku {
+public class SudokuGenerator {
 
-    ArrayList<ArrayList<Field>> fields = new ArrayList<>() {{
-        for (int i = 0; i < GRID_SIZE; i++) {
-            add(new ArrayList<Field>() {{
-                for (int j = 0; j < GRID_SIZE; j++) {
-                    add(new Field(0));
-                }
-            }});
-        }
-    }};
+
+
+    private Field[][] fields = new Field[GRID_SIZE][GRID_SIZE];
 
     int[][] grid = new int[GRID_SIZE][GRID_SIZE];
 
     private Level level;
 
-    private Sudoku(Level level) {
+    private SudokuGenerator(Level level) {
         this.level = (level == null) ? Level.MEDIUM : level;
         fillFields();
     }
 
+    public Field[][] getFields() {
+        return fields;
+    }
 
     private int generateRandomInt(int min, int max) {
         return new Random().nextInt(min, max + 1);
@@ -52,8 +51,8 @@ public class Sudoku {
 
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
-                fields.get(i).get(j).setValue(grid[i][j]);
-                fields.get(i).get(j).setEditable(grid[i][j] == 0);
+                fields[i][j].setValue(grid[i][j]);
+                fields[i][j].setEditable(grid[i][j] == 0);
             }
         }
     }
@@ -295,8 +294,8 @@ public class Sudoku {
             return this;
         }
 
-        public Sudoku build() {
-            return new Sudoku(this.level);
+        public SudokuGenerator build() {
+            return new SudokuGenerator(this.level);
         }
     }
 }
