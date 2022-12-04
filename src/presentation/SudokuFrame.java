@@ -29,6 +29,7 @@ public class SudokuFrame extends JFrame implements WindowListener {
     static JMenuItem mediumMenuItem;
     static JMenuItem hardMenuItem;
 
+
     static JButton[][] cells = new JButton[GRID_SIZE][GRID_SIZE];
 
     static JLabel nextGameInfoLabel;
@@ -180,7 +181,7 @@ public class SudokuFrame extends JFrame implements WindowListener {
         currentGameInfoLabel = new JLabel("");
         selectedValueInfoLabel = new JLabel(selectedNum == 0 ?
                 "Click on a field to delete it's value" : "Click on a field to set it's value to " + selectedNum);
-        timeLabel = new JLabel(TimeUtil.toMinuteSecondString(0L));
+        timeLabel = new JLabel(TimeUtil.toDisplayString(0L));
     }
 
     private void initMenuBar() {
@@ -195,6 +196,7 @@ public class SudokuFrame extends JFrame implements WindowListener {
         easyMenuItem = new JMenuItem(Level.EASY.stringValue);
         mediumMenuItem = new JMenuItem(Level.MEDIUM.stringValue);
         hardMenuItem = new JMenuItem(Level.HARD.stringValue);
+
         levelMenu = new JMenu("Level") {{
             add(easyMenuItem);
             add(mediumMenuItem);
@@ -211,10 +213,11 @@ public class SudokuFrame extends JFrame implements WindowListener {
         mediumMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.MEDIUM));
         hardMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.HARD));
 
+
     }
 
     public void setTextForTimeLabel(Long timeElapsedInSeconds) {
-        timeLabel.setText(TimeUtil.toMinuteSecondString(timeElapsedInSeconds));
+        timeLabel.setText(TimeUtil.toDisplayString(timeElapsedInSeconds));
     }
     public void setTextForCurrentGameLevel(Level level) {
         currentGameInfoLabel.setText("Current game's level: " + level.stringValue);

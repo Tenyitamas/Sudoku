@@ -10,7 +10,6 @@ public enum Level {
 
 
 
-
     public final int numberOfProvidedDigits;
     public final String stringValue;
     Level(int numberOfProvidedDigits, String stringValue) {

@@ -50,16 +50,9 @@ public class SudokuGame implements Serializable {
         return fields;
     }
 
-    private void startGame() {
-        gameState = GameState.ONGOING;
-    }
 
     public void endGame() {
         this.gameState = GameState.COMPLETE;
-    }
-
-    public void setTimeElapsedInSec(long timeElapsedInSec) {
-        this.timeElapsedInSec = timeElapsedInSec;
     }
 
     public void incrementTimeElapsedByOneSec() {
