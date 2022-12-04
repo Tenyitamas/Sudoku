@@ -1,89 +1,96 @@
 package presentation;
 
+import domain.model.Field;
 import domain.model.Level;
+import domain.model.SudokuGame;
+import util.Constants;
+import util.TimeUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
-public class MainFrame extends JFrame implements ActionListener {
+import static util.Constants.GRID_SIZE;
+import static util.Constants.GRID_SIZE_SQUARE_ROOT;
 
-    // MENU
+public class SudokuFrame extends JFrame implements WindowListener {
+
+    private static final ImageIcon DELETE_IMAGE_ICON = new ImageIcon("res/icons8-trash-24.png");
     static JMenuBar menuBar;
 
     static JMenu gameMenu;
     static JMenuItem newGameMenuItem;
+    static JMenuItem checkForMistakesMenuItem;
 
     static JMenu levelMenu;
     static JMenuItem easyMenuItem;
     static JMenuItem mediumMenuItem;
     static JMenuItem hardMenuItem;
 
-    // BOARD
+    static JButton[][] cells = new JButton[GRID_SIZE][GRID_SIZE];
 
-    // NUMS
+    static JLabel nextGameInfoLabel;
+    static JLabel currentGameInfoLabel;
+    static JLabel selectedValueInfoLabel;
+    static JLabel timeLabel;
 
-    // INFO LABELS
-    static JTextField nextGameInfoLabel;
+    static JPanel content;
+    static JPanel boardPanel;
+    static JPanel infoLabelsPanel;
+    static JPanel numbersPanel;
 
-    // PANELS
-    JPanel content;
-    JPanel boardPanel;
-    JPanel infoLabelsPanel;
-    JPanel numbersPanel;
+    static Timer timer;
 
     static GridBagLayout sudokuLayout;
 
 
-    private MainFrameListener listener;
+    private final SudokuFrameListener listener;
+    private int selectedNum = 0;
 
 
-    public MainFrame(MainFrameListener listener) {
+    public SudokuFrame(SudokuFrameListener listener) {
         this.listener = listener;
+        addWindowListener(this);
 
         setTitle("Sudoku");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
         initMenuBar();
-        // InitBoard
-        // InitNumbers
-        // InitInfoLabels
         initInfoLabels();
+        initTimer();
         initPanels();
-
 
         setSize(1000, 1000);
         setResizable(false);
 
-        getContentPane().setBackground(Color.BLUE);
 
     }
 
+    private void initTimer() {
+        timer = new Timer(1000, e -> {
+            listener.onSecondPassed();
+        });
+        timer.start();
+    }
+
+
+    public void updateViewWithGame(SudokuGame game) {
+        setTextForCurrentGameLevel(game.getLevel());
+        fillBoard(game.getFields());
+    }
+
+    public void showMessageDialog(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
     private void initPanels() {
-        boardPanel = new JPanel(new GridLayout(9,9)) {{
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    add(new JButton("{%d, %d}".formatted(i,j)) {{
-                        setPreferredSize(new Dimension(61, 61));
-                    }}) ;
-                }
-            }
-            setSize(new Dimension(600, 600));
-        }};
-        numbersPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)) {{
-            add(new JButton("ahahdbha"));
-            add(new JButton("ahahdbha"));
-            add(new JButton("ahahdbha"));
-            add(new JButton("ahahdbha"));
-            setPreferredSize(new Dimension(1000, 100));
-        }};
-        infoLabelsPanel = new JPanel(new GridLayout(3, 1)){{
-            add(nextGameInfoLabel);
-            add(new JTextField("KDAHJD"));
-            setPreferredSize(new Dimension(1000, 100));
-        }};
+        getContentPane().removeAll();
+
+        boardPanel = createBoardPanel();
+        numbersPanel = createNumbersPanel();
+        infoLabelsPanel = createInfoLabelsPanel();
+
 
         content = new JPanel(new BorderLayout()) {{
             add(infoLabelsPanel, BorderLayout.NORTH);
@@ -94,11 +101,71 @@ public class MainFrame extends JFrame implements ActionListener {
         }};
 
         getContentPane().add(content);
+    }
 
+    private JPanel createInfoLabelsPanel() {
+        return new JPanel(new GridLayout(3, 1)) {{
+            add(nextGameInfoLabel);
+            add(currentGameInfoLabel);
+            add(selectedValueInfoLabel);
+            add(timeLabel);
+            setPreferredSize(new Dimension(1000, 100));
+        }};
+    }
+
+    private JPanel createNumbersPanel() {
+        return new JPanel(new FlowLayout(FlowLayout.CENTER)) {{
+            add(new JButton(DELETE_IMAGE_ICON) {{
+                addActionListener(e -> onNumberClicked(0));
+            }});
+            for (int i = Constants.MIN_DIGIT_VALUE; i <= Constants.MAX_DIGIT_VALUE; i++) {
+                add(new JButton(i + "") {{
+                    addActionListener(e -> onNumberClicked(Integer.parseInt(this.getText())));
+                }});
+            }
+            setPreferredSize(new Dimension(1000, 100));
+        }};
+    }
+
+    private JPanel createBoardPanel() {
+        return new JPanel(new GridLayout(GRID_SIZE, GRID_SIZE, 0, 0)) {{
+            for (int i = 0; i < GRID_SIZE; i++) {
+                for (int j = 0; j < GRID_SIZE; j++) {
+                    int row = i;
+                    int col = j;
+
+                    int top = 1;
+                    int bottom = 1;
+                    int left = 1;
+                    int right = 1;
+                    Color borderColor = Color.BLACK;
+
+                    if(i % GRID_SIZE_SQUARE_ROOT == 0) top += 2;
+                    if(j % GRID_SIZE_SQUARE_ROOT == 0) left += 2;
+                    if(i == 0) top += 2;
+                    if(j == 0) left += 2;
+                    if(i == GRID_SIZE - 1) bottom += 4;
+                    if(j == GRID_SIZE - 1) right += 4;
+
+                    cells[i][j] = new JButton("shd") {{
+                        addActionListener(e -> onFieldClickedAtLocation(row, col));
+                        setBackground(Color.WHITE);
+                        setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+                    }};
+
+                    cells[i][j].setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, borderColor));
+                    add(cells[i][j]);
+                }
+            }
+        }};
     }
 
     private void initInfoLabels() {
-        nextGameInfoLabel = new JTextField("COMEOEMDONED jkasbdjka bdbasbdhabhdbajsba d a fasj d ha dj");
+        nextGameInfoLabel = new JLabel("");
+        currentGameInfoLabel = new JLabel("");
+        selectedValueInfoLabel = new JLabel(selectedNum == 0 ?
+                "Click on a field to delete it's value" : "Click on a field to set it's value to " + selectedNum);
+        timeLabel = new JLabel(TimeUtil.toMinuteSecondString(0L));
     }
 
     private void initMenuBar() {
@@ -106,11 +173,13 @@ public class MainFrame extends JFrame implements ActionListener {
 
         gameMenu = new JMenu("Game");
         newGameMenuItem = new JMenuItem("New Game");
+        checkForMistakesMenuItem = new JMenuItem("Check for mistakes");
         gameMenu.add(newGameMenuItem);
+        gameMenu.add(checkForMistakesMenuItem);
 
-        easyMenuItem = new JMenuItem("Easy");
-        mediumMenuItem = new JMenuItem("Medium");
-        hardMenuItem = new JMenuItem("Hard");
+        easyMenuItem = new JMenuItem(Level.EASY.stringValue);
+        mediumMenuItem = new JMenuItem(Level.MEDIUM.stringValue);
+        hardMenuItem = new JMenuItem(Level.HARD.stringValue);
         levelMenu = new JMenu("Level") {{
             add(easyMenuItem);
             add(mediumMenuItem);
@@ -121,34 +190,102 @@ public class MainFrame extends JFrame implements ActionListener {
         menuBar.add(levelMenu);
         setJMenuBar(menuBar);
 
-        newGameMenuItem.addActionListener(this);
-        easyMenuItem.addActionListener(this);
-        mediumMenuItem.addActionListener(this);
-        hardMenuItem.addActionListener(this);
+        newGameMenuItem.addActionListener(e -> listener.onNewGameMenuItemClicked());
+        checkForMistakesMenuItem.addActionListener(e -> listener.onCheckForMistakesMenuItemClicked());
+        easyMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.EASY));
+        mediumMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.MEDIUM));
+        hardMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.HARD));
 
+    }
+
+    public void setTextForTimeLabel(Long timeElapsedInSeconds) {
+        timeLabel.setText(TimeUtil.toMinuteSecondString(timeElapsedInSeconds));
+    }
+    public void setTextForCurrentGameLevel(Level level) {
+        currentGameInfoLabel.setText("Current game's level: " + level.stringValue);
     }
 
     public void setTextForNextGameLevel(Level level) {
-        //nextGameInfoLabel.setText("If you start a new game it will be level: " + level.stringValue);
+        nextGameInfoLabel.setText("If you create a new game the level will be: " + level.stringValue);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
-        if (newGameMenuItem.equals(source)) {
-            listener.onNewGameMenuItemClicked();
-        } else if (easyMenuItem.equals(source)) {
-            listener.onLevelMenuItemClicked(Level.EASY);
-        } else if(mediumMenuItem.equals(source)) {
-            listener.onLevelMenuItemClicked(Level.MEDIUM);
-        } else if(hardMenuItem.equals(source)) {
-            listener.onLevelMenuItemClicked(Level.HARD);
+    private void fillBoard(Field[][] fields) {
+        for (int i = 0; i < fields.length; i++) {
+            for (int j = 0; j < fields.length; j++) {
+                int row = i;
+                int col = j;
+                cells[i][j].setText(fields[i][j].getValue() == 0 ?
+                        "" : fields[i][j].getValue() + "");
+                cells[i][j].setForeground(fields[row][col].isEditable() ? Color.BLACK : Color.GRAY);
+            }
         }
     }
 
-    public interface MainFrameListener {
-        public void onNewGameMenuItemClicked();
-
-        public void onLevelMenuItemClicked(Level level);
+    private void setTextForNumberInfoLabel(int selectedNum) {
+        selectedValueInfoLabel.setText(selectedNum == 0 ?
+                "Click on a field to delete it's value" : "Click on a field to set it's value to " + selectedNum);
     }
+
+    private void onNumberClicked(int value) {
+        selectedNum = value;
+        setTextForNumberInfoLabel(selectedNum);
+    }
+
+    private void onFieldClickedAtLocation(int row, int col) {
+        listener.onFieldClickWithValue(row, col, selectedNum);
+    }
+
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        timer.stop();
+        listener.onWindowClosing();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
+    }
+
+
+    public interface SudokuFrameListener {
+
+        void onNewGameMenuItemClicked();
+
+        void onCheckForMistakesMenuItemClicked();
+
+        void onLevelMenuItemClicked(Level level);
+
+        void onFieldClickWithValue(int row, int col, int value);
+
+        void onSecondPassed();
+
+        void onWindowClosing();
+    }
+
 }

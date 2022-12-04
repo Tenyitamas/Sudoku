@@ -1,13 +1,17 @@
 package domain.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
-public class Field {
+public class Field implements Serializable {
     private int value = 0;
     private boolean editable = false;
-    private Coordinates coordinates;
     private Set<Integer> noteValues = Collections.emptySet();
+
+    public Field(){
+
+    }
 
     public Field(int value) {
         this.value = value;

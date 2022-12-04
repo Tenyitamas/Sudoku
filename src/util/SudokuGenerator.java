@@ -9,10 +9,7 @@ import static util.Constants.*;
 
 public class SudokuGenerator {
 
-
-
     private Field[][] fields = new Field[GRID_SIZE][GRID_SIZE];
-
     int[][] grid = new int[GRID_SIZE][GRID_SIZE];
 
     private Level level;
@@ -51,6 +48,7 @@ public class SudokuGenerator {
 
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
+                fields[i][j] = new Field();
                 fields[i][j].setValue(grid[i][j]);
                 fields[i][j].setEditable(grid[i][j] == 0);
             }
@@ -157,134 +155,6 @@ public class SudokuGenerator {
             }
         }
     }
-
-
-   /* private void fillFields() {
-        fillDiagonalBoxes();
-        fillRemaining(0, GRID_SIZE_SQUARE_ROOT);
-        removeDigits();
-    }
-
-    private void removeDigits() {
-        int digitsToRemove = GRID_SIZE * GRID_SIZE - level.numberOfProvidedDigits;
-
-        while (digitsToRemove > 0) {
-            int randomRow = generateRandomInt(MIN_DIGIT_INDEX, MAX_DIGIT_INDEX);
-            int randomColumn = generateRandomInt(MIN_DIGIT_INDEX, MAX_DIGIT_INDEX);
-
-            if(fields.get(randomRow).get(randomColumn).getValue() != 0) {
-                int digitToRemove = fields.get(randomRow).get(randomColumn).getValue();
-                fields.get(randomRow).get(randomColumn).setValue(0);
-                if(!SudokuSolver.solvable(fields)) {
-                    fields.get(randomRow).get(randomColumn).setValue(digitToRemove);
-                } else {
-                    digitsToRemove --;
-                }
-            }
-        }
-        System.out.println("Been there done that");
-    }
-
-    private boolean fillRemaining(int rowStart, int colStart) {
-        int i = rowStart;
-        int j = colStart;
-
-        if (j >= GRID_SIZE && i < GRID_SIZE - 1) {
-            i++;
-            j = 0;
-        }
-        if (i >= GRID_SIZE && j >= GRID_SIZE) {
-            return true;
-        }
-
-        if (i < GRID_SIZE_SQUARE_ROOT) {
-            if (j < GRID_SIZE_SQUARE_ROOT) {
-                j = GRID_SIZE_SQUARE_ROOT;
-            }
-        } else if (i < GRID_SIZE - GRID_SIZE_SQUARE_ROOT) {
-            if (j == (i / GRID_SIZE_SQUARE_ROOT) * GRID_SIZE_SQUARE_ROOT) {
-                j += GRID_SIZE_SQUARE_ROOT;
-            }
-        } else {
-            if (j == GRID_SIZE - GRID_SIZE_SQUARE_ROOT) {
-                i++;
-                j = 0;
-                if (i >= GRID_SIZE) return true;
-            }
-        }
-
-        for (int digit = MIN_DIGIT_VALUE; digit <= MAX_DIGIT_VALUE; digit++) {
-            if(isSafeToPutIn(i, j, digit)) {
-                fields.get(i).get(j).setValue(digit);
-                if(fillRemaining(i, j+1)) {
-                    return true;
-                }
-                fields.get(i).get(j).setValue(0);
-            }
-        }
-        return false;
-    }
-
-    private boolean isSafeToPutIn(int row, int column, int digit) {
-        return isUnusedInBox(findBoxStart(row), findBoxStart(column), digit)
-                && isUnusedInRow(row, digit)
-                && isUnusedInColumn(column, digit);
-    }
-
-    private boolean isUnusedInColumn(int column, int digit) {
-        for (int i = 0; i < GRID_SIZE; i++) {
-            if(fields.get(i).get(column).getValue() == digit) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isUnusedInRow(int row, int digit) {
-        for (int i = 0; i < GRID_SIZE; i++) {
-            if(fields.get(row).get(i).getValue() == digit) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private int findBoxStart(int index) {
-        return index - index % GRID_SIZE_SQUARE_ROOT;
-    }
-
-    private void fillDiagonalBoxes() {
-        for (int i = 0; i < GRID_SIZE; i += GRID_SIZE_SQUARE_ROOT) {
-            fillBox(i, i);
-        }
-    }
-
-    private void fillBox(int row, int column) {
-        int generatedDigit;
-
-        for (int i = 0; i < GRID_SIZE_SQUARE_ROOT; i++) {
-            for (int j = 0; j < GRID_SIZE_SQUARE_ROOT; j++) {
-                do {
-                    generatedDigit = generateRandomInt(MIN_DIGIT_VALUE, MAX_DIGIT_INDEX);
-                } while (!isUnusedInBox(row, column, generatedDigit));
-
-                fields.get(row + i).get(column + j).setValue(generatedDigit);
-            }
-
-        }
-    }
-
-    private boolean isUnusedInBox(int rowStart, int columnStart, int digit) {
-        for (int i = 0; i < GRID_SIZE_SQUARE_ROOT; i++) {
-            for (int j = 0; j < GRID_SIZE_SQUARE_ROOT; j++) {
-                if (fields.get(rowStart + i).get(columnStart + j).getValue() == digit) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }*/
-
 
     static public class Builder {
         Level level;

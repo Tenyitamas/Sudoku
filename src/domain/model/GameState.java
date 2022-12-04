@@ -2,5 +2,6 @@ package domain.model;
 
 public enum GameState {
     COMPLETE,
-    ONGOING
+    ONGOING,
+    STOPPED
 }
