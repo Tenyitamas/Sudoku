@@ -74,6 +74,15 @@ public class SudokuGame implements Serializable {
         return timeElapsedInSec;
     }
 
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
+
     public BoardResult checkForResult() {
         if (hasEmptySquare()) return BoardResult.NOT_FILLED;
         if (solvable()) return BoardResult.NO_MISTAKE;

@@ -1,7 +1,5 @@
 import data.local.LocalStorageImpl;
-import domain.model.BoardResult;
-import domain.model.Level;
-import domain.model.SudokuGame;
+import domain.model.*;
 import domain.repository.LocalStorage;
 import presentation.SudokuFrame;
 
@@ -22,6 +20,8 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
         initSudokuGame();
     }
 
+
+
     private void initSudokuGame() {
         try {
             sudokuGame = storage.loadGame();
@@ -30,8 +30,6 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
             sudokuGame = new SudokuGame(nextGameLevel);
         }
         sudokuFrame.updateViewWithGame(sudokuGame);
-
-
     }
 
     @Override
@@ -58,14 +56,22 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
 
     @Override
     public void onFieldClickWithValue(int row, int col, int value) {
+        if(sudokuGame.getGameState() == GameState.COMPLETE) return;
+
         sudokuGame.setFieldValueAtLocation(row, col, value);
-        sudokuFrame.updateViewWithGame(sudokuGame);
         var result = sudokuGame.checkForResult();
         if(result == BoardResult.NO_MISTAKE) {
-            sudokuFrame.showMessageDialog("Congratulations, You won!");
+            sudokuGame.setGameState(GameState.COMPLETE);
+            sudokuFrame.updateViewWithGame(sudokuGame);
         } else if(result == BoardResult.HAS_MISTAKE) {
+            sudokuGame.setGameState(GameState.ONGOING);
+            sudokuFrame.updateViewWithGame(sudokuGame);
             sudokuFrame.showMessageDialog("Dumbass...");
+        } else {
+            sudokuFrame.updateViewWithGame(sudokuGame);
         }
+
+
     }
 
     @Override

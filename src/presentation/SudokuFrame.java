@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.model.Field;
+import domain.model.GameState;
 import domain.model.Level;
 import domain.model.SudokuGame;
 import util.Constants;
@@ -76,9 +77,23 @@ public class SudokuFrame extends JFrame implements WindowListener {
 
 
     public void updateViewWithGame(SudokuGame game) {
-        setTextForCurrentGameLevel(game.getLevel());
         fillBoard(game.getFields());
+        setTextForCurrentGameLevel(game.getLevel());
+        numbersPanel.setVisible(true);
+
+        if(game.getGameState() == GameState.ONGOING) {
+            if(!timer.isRunning()) {
+                timer.start();
+            }
+
+        } else if(game.getGameState() == GameState.COMPLETE) {
+            timer.stop();
+            numbersPanel.setVisible(false);
+            setTextForTimeLabel(game.getTimeElapsedInSec());
+            showMessageDialog("Congratulations, You won!");
+        }
     }
+
 
     public void showMessageDialog(String message) {
         JOptionPane.showMessageDialog(this, message);

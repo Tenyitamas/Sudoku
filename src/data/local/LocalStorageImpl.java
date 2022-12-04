@@ -5,16 +5,16 @@ import domain.model.SudokuGame;
 import domain.repository.LocalStorage;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class LocalStorageImpl implements LocalStorage {
 
-    private static final String PATH = "last_game";
+    private static final String SUDOKU_GAME_PATH = "last_game";
+    private static final String LEADERBOARD_PATH = "leaderboard";
+
     @Override
     public void saveGame(SudokuGame game) throws IOException {
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(PATH);
+            FileOutputStream fileOutputStream = new FileOutputStream(SUDOKU_GAME_PATH);
             new ObjectOutputStream(fileOutputStream){{
                 writeObject(game);
                 close();
@@ -29,7 +29,7 @@ public class LocalStorageImpl implements LocalStorage {
     @Override
     public SudokuGame loadGame() throws IOException {
         try {
-            FileInputStream fileInputStream = new FileInputStream(PATH);
+            FileInputStream fileInputStream = new FileInputStream(SUDOKU_GAME_PATH);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             SudokuGame s = (SudokuGame) objectInputStream.readObject();
             objectInputStream.close();
