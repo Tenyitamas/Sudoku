@@ -1,4 +1,6 @@
 import data.local.LocalStorageImpl;
+import domain.command.move.MakeMoveCommand;
+import domain.command.move.UndoMoveCommand;
 import domain.model.*;
 import domain.repository.LocalStorage;
 import presentation.SudokuFrame;
@@ -19,7 +21,6 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
         sudokuFrame.setVisible(true);
         initSudokuGame();
     }
-
 
 
     private void initSudokuGame() {
@@ -58,7 +59,13 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
     public void onFieldClickWithValue(int row, int col, int value) {
         if(sudokuGame.getGameState() == GameState.COMPLETE) return;
 
-        sudokuGame.setFieldValueAtLocation(row, col, value);
+        //sudokuGame.setFieldValueAtLocation(row, col, value);
+        new MakeMoveCommand(sudokuGame, new Move(
+                row, col, sudokuGame.getFieldValueAtLocation(row, col), value
+        )) {{
+            execute();
+        }};
+
         var result = sudokuGame.checkForResult();
         if(result == BoardResult.NO_MISTAKE) {
             sudokuGame.setGameState(GameState.COMPLETE);
@@ -72,6 +79,14 @@ public class SudokuApplication implements SudokuFrame.SudokuFrameListener {
         }
 
 
+    }
+
+    @Override
+    public void onUndoMenuItemClicked() {
+        new UndoMoveCommand(sudokuGame){{
+            execute();
+        }};
+        sudokuFrame.updateViewWithGame(sudokuGame);
     }
 
     @Override

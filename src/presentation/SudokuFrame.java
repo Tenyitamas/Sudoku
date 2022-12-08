@@ -23,6 +23,7 @@ public class SudokuFrame extends JFrame implements WindowListener {
     static JMenu gameMenu;
     static JMenuItem newGameMenuItem;
     static JMenuItem checkForMistakesMenuItem;
+    static JMenuItem undoMoveMenuItem;
 
     static JMenu levelMenu;
     static JMenuItem easyMenuItem;
@@ -65,8 +66,6 @@ public class SudokuFrame extends JFrame implements WindowListener {
 
         setSize(1000, 1000);
         setResizable(false);
-
-
     }
 
     private void initTimer() {
@@ -188,10 +187,14 @@ public class SudokuFrame extends JFrame implements WindowListener {
         menuBar = new JMenuBar();
 
         gameMenu = new JMenu("Game");
+
         newGameMenuItem = new JMenuItem("New Game");
         checkForMistakesMenuItem = new JMenuItem("Check for mistakes");
+        undoMoveMenuItem = new JMenuItem("Redo move");
+
         gameMenu.add(newGameMenuItem);
         gameMenu.add(checkForMistakesMenuItem);
+        gameMenu.add(undoMoveMenuItem);
 
         easyMenuItem = new JMenuItem(Level.EASY.stringValue);
         mediumMenuItem = new JMenuItem(Level.MEDIUM.stringValue);
@@ -209,6 +212,7 @@ public class SudokuFrame extends JFrame implements WindowListener {
 
         newGameMenuItem.addActionListener(e -> listener.onNewGameMenuItemClicked());
         checkForMistakesMenuItem.addActionListener(e -> listener.onCheckForMistakesMenuItemClicked());
+        undoMoveMenuItem.addActionListener(e -> listener.onUndoMenuItemClicked());
         easyMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.EASY));
         mediumMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.MEDIUM));
         hardMenuItem.addActionListener(e -> listener.onLevelMenuItemClicked(Level.HARD));
@@ -255,9 +259,7 @@ public class SudokuFrame extends JFrame implements WindowListener {
 
 
     @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
+    public void windowOpened(WindowEvent e) {}
 
     @Override
     public void windowClosing(WindowEvent e) {
@@ -266,30 +268,19 @@ public class SudokuFrame extends JFrame implements WindowListener {
     }
 
     @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
+    public void windowClosed(WindowEvent e) {}
 
     @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
+    public void windowIconified(WindowEvent e) {}
 
     @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
+    public void windowDeiconified(WindowEvent e) {}
 
     @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
+    public void windowActivated(WindowEvent e) {}
 
     @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
-
+    public void windowDeactivated(WindowEvent e) {}
 
     public interface SudokuFrameListener {
 
@@ -301,9 +292,12 @@ public class SudokuFrame extends JFrame implements WindowListener {
 
         void onFieldClickWithValue(int row, int col, int value);
 
+        void onUndoMenuItemClicked();
+
         void onSecondPassed();
 
         void onWindowClosing();
     }
 
+    // TODO: undo moves, command design pattern
 }

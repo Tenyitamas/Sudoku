@@ -16,11 +16,14 @@ public class SudokuGame implements Serializable {
     private long timeElapsedInSec = 0;
     private Level level;
 
-    public SudokuGame(GameState gameState, Field[][] fields, long timeElapsedInSec, Level level) {
+    private LinkedList<Move> moves;
+
+    public SudokuGame(GameState gameState, Field[][] fields, long timeElapsedInSec, Level level, LinkedList<Move> moves) {
         this.gameState = gameState;
         this.fields = fields;
         this.timeElapsedInSec = timeElapsedInSec;
         this.level = level;
+        this.moves = moves;
     }
 
     public SudokuGame(Level level) {
@@ -31,19 +34,32 @@ public class SudokuGame implements Serializable {
                 .setLevel(level)
                 .build();
         this.fields = s.getFields();
+        moves = new LinkedList<>();
 
     }
 
 
-    public void setFieldValueAtLocation(int row, int col, int value) {
+    public boolean setFieldValueAtLocation(int row, int col, int value) {
         if (SudokuUtils.isValidIndex(row)
                 && SudokuUtils.isValidIndex(col)
                 && SudokuUtils.isValidValue(value)
         ) {
             if (fields[row][col].isEditable()) {
                 fields[row][col].setValue(value);
+                return true;
             }
         }
+        return false;
+    }
+
+    public int getFieldValueAtLocation(int row, int col) {
+        if (SudokuUtils.isValidIndex(row)
+                && SudokuUtils.isValidIndex(col)
+        ) {
+            return fields[row][col].getValue();
+        }
+
+        return -1;
     }
 
     public Field[][] getFields() {
@@ -75,6 +91,21 @@ public class SudokuGame implements Serializable {
         this.gameState = gameState;
     }
 
+    public LinkedList<Move> getMoves() {
+        return moves;
+    }
+
+    public void setMoves(LinkedList<Move> moves) {
+        this.moves = moves;
+    }
+
+    public void addMove(Move move) {
+        moves.push(move);
+    }
+
+    public void removeLastMove() {
+        moves.pop();
+    }
 
     public BoardResult checkForResult() {
         if (hasEmptySquare()) return BoardResult.NOT_FILLED;
